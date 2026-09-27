@@ -1,7 +1,8 @@
 // Service worker: guarda o app no iPad para funcionar sem internet.
 // Ao mudar qualquer arquivo, suba a versão abaixo (v2, v3...) para o iPad baixar a nova.
-const VERSION = 'casa-v1';
-const APP = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
+const VERSION = 'casa-v2';
+const APP = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png',
+  './img/clothes/baseball-cap.png', './img/clothes/dress.png', './img/clothes/hat.png', './img/clothes/jacket.png', './img/clothes/jeans.png', './img/clothes/shoes.png', './img/clothes/shorts.png', './img/clothes/skirt.png', './img/clothes/socks.png', './img/clothes/sweater.png', './img/clothes/t-shirt.png', './img/clothes/trousers.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(APP)).then(() => self.skipWaiting()));
