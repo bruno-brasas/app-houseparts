@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Casa">
+<meta name="theme-color" content="#CFE6F2">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>No. 7 Primrose Lane</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  /* Tema único e deliberado (livro ilustrado), cores explícitas */
+  :root{
+    --page:#E3EEF3; --paper:#FFFFFF; --ink:#26313D; --mute:#56657A;
+    --sky:#CFE6F2; --brick:#B5523B; --door:#C8322E; --sage:#7FA66B;
+    --sage-lt:#DDEDD3; --butter:#F6D66B; --butter-lt:#FDF1C4; --red-lt:#F8D9D2;
+    --display:"Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+    --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  body{background:var(--page);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;padding-inline:16px}
+  .shell{max-width:1120px;margin:0 auto;padding-block:20px 56px;display:flex;flex-direction:column;gap:18px}
+  h1,h2,h3{font-family:var(--display);line-height:1.05;margin:0;text-wrap:balance}
+  p{margin:0}
+  button{font:inherit;color:inherit;cursor:pointer}
+  button:focus-visible,.part:focus-visible{outline:3px solid var(--door);outline-offset:3px}
+
+  /* Topo */
+  .top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand svg{flex:none}
+  .brand h1{font-size:clamp(28px,4.4vw,42px);font-weight:800;letter-spacing:-.01em}
+  .brand p{color:var(--mute);font-size:15px}
+  .score{display:flex;gap:8px;flex-wrap:wrap}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:4px 12px;font-family:var(--display);font-weight:700;font-size:17px;font-variant-numeric:tabular-nums}
+  .pill .star{color:#D9A400}
+
+  /* Passos: a ordem é real (explorar, relembrar, reforçar) */
+  .steps{display:flex;flex-wrap:wrap;gap:10px}
+  .step{display:flex;align-items:center;gap:10px;background:var(--paper);border:2px solid var(--ink);border-radius:14px;padding:8px 16px 8px 8px;box-shadow:3px 3px 0 var(--ink);font-family:var(--display);font-weight:700;font-size:19px;transition:transform .12s}
+  .step:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+  .step .n{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--sky);border:2px solid var(--ink);font-size:17px}
+  .step[aria-current="step"]{background:var(--butter)}
+  .step[aria-current="step"] .n{background:var(--paper)}
+  .step small{display:block;font-family:var(--body);font-weight:400;font-size:13px;color:var(--mute);line-height:1.1}
+
+  /* Explorar */
+  .stage{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:18px;align-items:start}
+  .frame{background:var(--sky);border:3px solid var(--ink);border-radius:18px;overflow:hidden;box-shadow:5px 5px 0 var(--ink)}
+  .frame svg{display:block;width:100%;height:auto}
+  .hint{font-size:15px;color:var(--mute);margin-top:10px}
+  .card{background:var(--paper);border:3px solid var(--ink);border-radius:18px;box-shadow:5px 5px 0 var(--ink);padding:18px;display:flex;flex-direction:column;gap:12px}
+  .zoombox{border:2px solid var(--ink);border-radius:12px;overflow:hidden;background:var(--sky)}
+  .zoombox svg{display:block;width:100%;height:auto;aspect-ratio:4/3;max-width:100%}
+  .wordrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .word{font-size:clamp(36px,5vw,48px);font-weight:800;color:var(--brick)}
+  .pt{font-size:19px}
+  .pt b{font-weight:700}
+  .som{font-size:15px;color:var(--mute)}
+  .som b{color:var(--ink);letter-spacing:.04em}
+  .ukus{display:flex;gap:6px;flex-wrap:wrap}
+  .tag{font-size:13px;font-weight:700;border:2px solid var(--ink);border-radius:8px;padding:2px 8px;letter-spacing:.04em;text-transform:uppercase}
+  .tag.uk{background:var(--butter-lt)}
+  .tag.us{background:#EEF1F4;color:var(--mute);border-color:#9AA6B4;text-decoration:line-through;text-decoration-thickness:2px}
+  .ex{display:flex;gap:10px;align-items:flex-start;background:var(--page);border-radius:12px;padding:10px 12px}
+  .ex .en{font-weight:700}
+  .ex .ptx{color:var(--mute);font-size:15px}
+  .note{font-size:15px;border-left:4px solid var(--butter);padding-left:10px}
+  .yourturn{font-family:var(--display);font-weight:700;font-size:18px;color:var(--sage)}
+  .say{flex:none;display:grid;place-items:center;border:2px solid var(--ink);border-radius:50%;background:var(--butter);width:48px;height:48px;box-shadow:2px 2px 0 var(--ink)}
+  .say.sm{width:36px;height:36px;box-shadow:none}
+  .say:active{transform:translate(1px,1px)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:2px solid var(--ink);border-radius:999px;background:var(--paper);padding:5px 12px;font-weight:700;font-size:15px}
+  .chip.seen{background:var(--sage-lt)}
+  .chip.seen::before{content:"✓ ";color:#3E7A2F}
+  .chip.on{background:var(--butter)}
+  .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+  .count{font-family:var(--display);font-weight:700;font-size:18px;font-variant-numeric:tabular-nums}
+
+  .go{border:3px solid var(--ink);border-radius:14px;background:var(--door);color:#fff;font-family:var(--display);font-weight:800;font-size:21px;padding:10px 22px;box-shadow:4px 4px 0 var(--ink)}
+  .go.alt{background:var(--paper);color:var(--ink)}
+  .go:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+
+  /* Jogos */
+  .game{max-width:720px;margin:0 auto;width:100%}
+  .game .card{gap:14px}
+  .eyebrow{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mute)}
+  .progress{display:flex;gap:6px;flex-wrap:wrap}
+  .progress i{width:22px;height:8px;border-radius:4px;background:#D2DCE3}
+  .progress i.done{background:var(--sage)}
+  .progress i.miss{background:var(--door)}
+  .progress i.now{background:var(--butter);outline:2px solid var(--ink)}
+  .ask{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .ask h2{font-size:clamp(28px,4vw,36px);font-weight:800}
+  .ask .ptq{color:var(--mute);font-size:16px}
+  .opts{display:grid;gap:10px}
+  .opt{display:flex;gap:10px;align-items:center}
+  .optbtn{flex:1;text-align:left;border:3px solid var(--ink);border-radius:14px;background:var(--paper);padding:10px 16px;font-family:var(--display);font-weight:800;font-size:clamp(22px,3.4vw,28px);box-shadow:3px 3px 0 var(--ink)}
+  .optbtn:disabled{cursor:default}
+  .optbtn.ok{background:var(--sage-lt);border-color:#3E7A2F}
+  .optbtn.no{background:var(--red-lt);border-color:var(--door)}
+  .feedback{font-family:var(--display);font-weight:800;font-size:24px;min-height:1.2em}
+  .feedback.ok{color:#3E7A2F}
+  .feedback.no{color:var(--door)}
+  .shake{animation:shake .35s}
+  @keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+  .pop{animation:pop .3s}
+  @keyframes pop{50%{transform:scale(1.06)}}
+
+  .slots{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+  .slot{width:42px;height:54px;border-bottom:4px solid var(--ink);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:32px;color:var(--brick)}
+  .slot.gap{width:18px;border:0}
+  .tiles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  .tile{width:54px;height:54px;border:3px solid var(--ink);border-radius:12px;background:var(--butter-lt);font-family:var(--display);font-weight:800;font-size:28px;box-shadow:3px 3px 0 var(--ink)}
+  .tile:disabled{opacity:.25;box-shadow:none;cursor:default}
+  .tile.hintme{background:var(--butter);animation:pop .6s infinite}
+
+  .result{text-align:center;align-items:center}
+  .big{font-size:clamp(40px,7vw,64px);font-weight:800;color:var(--brick)}
+  .stars{font-size:34px;letter-spacing:4px;color:#D9A400}
+  .intro{display:flex;flex-direction:column;gap:12px}
+  .intro h2{font-size:clamp(30px,4.4vw,40px);font-weight:800}
+  .foot{display:flex;justify-content:flex-end;gap:10px;align-items:center;font-size:14px;color:var(--mute)}
+  .link{background:none;border:0;text-decoration:underline;color:var(--mute);padding:4px}
+
+  /* Casa */
+  .part{cursor:pointer;transition:filter .15s}
+  .part:hover{filter:brightness(1.08) saturate(1.1)}
+  .hlbox{fill:none;stroke:#E8412E;stroke-width:4;stroke-dasharray:10 6;pointer-events:none;animation:march 1s linear infinite}
+  .hlbox.bad{stroke:#56657A}
+  @keyframes march{to{stroke-dashoffset:-32}}
+  .smoke circle{animation:puff 3.2s ease-out infinite;transform-box:fill-box;transform-origin:center}
+  .smoke circle:nth-child(2){animation-delay:1.1s}
+  .smoke circle:nth-child(3){animation-delay:2.2s}
+  @keyframes puff{0%{opacity:0;transform:translateY(10px) scale(.6)}30%{opacity:.9}100%{opacity:0;transform:translateY(-18px) scale(1.4)}}
+
+  @media (prefers-reduced-motion: reduce){
+    .hlbox,.smoke circle,.tile.hintme,.shake,.pop{animation:none}
+  }
+  @media (max-width: 860px){
+    .stage{grid-template-columns:1fr}
+  }
+  @media (max-width: 480px){
+    .step{font-size:17px;padding-right:12px}
+    .step small{display:none}
+    .slot{width:32px;height:46px;font-size:26px}
+    .tile{width:48px;height:48px;font-size:24px}
+  }
+</style>
+<style>
+  /* Base (equivale ao esqueleto do artefato) + ajustes de toque para iPad */
+  :root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  html,body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+  *{-webkit-tap-highlight-color:transparent}
+  body{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overscroll-behavior:none;
+       padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+</style>
+</head>
+<body>
+
+
+<!-- Texturas compartilhadas pela casa e pelos recortes -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <pattern id="brick" width="24" height="12" patternUnits="userSpaceOnUse"><rect width="24" height="12" fill="#B5523B"/><path d="M0 .5H24M0 6.5H24M6 0V6M18 6V12" stroke="#94412F" stroke-width="1" fill="none"/></pattern>
+    <pattern id="tiles" width="14" height="9" patternUnits="userSpaceOnUse"><rect width="14" height="9" fill="#5B6573"/><path d="M0 9Q3.5 3 7 9Q10.5 3 14 9" fill="none" stroke="#434B57" stroke-width="1.2"/></pattern>
+    <pattern id="stone" width="30" height="18" patternUnits="userSpaceOnUse"><rect width="30" height="18" fill="#8C7B6A"/><path d="M0 .5H30M0 9.5H30M10 0V9M24 9V18" stroke="#6F604F" fill="none"/></pattern>
+    <pattern id="bathtile" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#D6EDE9"/><path d="M0 .5H14M.5 0V14" stroke="#B9DAD3" fill="none"/></pattern>
+  </defs>
+</svg>
+
+<div class="shell">
+  <header class="top">
+    <div class="brand">
+      <svg width="52" height="52" viewBox="0 0 52 52" aria-hidden="true"><path d="M6 24 26 8l20 16" fill="#5B6573" stroke="#26313D" stroke-width="3" stroke-linejoin="round"/><rect x="11" y="23" width="30" height="24" fill="#B5523B" stroke="#26313D" stroke-width="3"/><rect x="21" y="31" width="10" height="16" fill="#C8322E" stroke="#26313D" stroke-width="2"/><circle cx="26" cy="36" r="1.6" fill="#F6D66B"/></svg>
+      <div>
+        <h1>No. 7 Primrose Lane</h1>
+        <p>As partes da casa em inglês britânico</p>
+      </div>
+    </div>
+    <div class="score">
+      <span class="pill" title="Palavras descobertas"><span id="seenCount">0</span>/18 descobertas</span>
+      <span class="pill" title="Estrelas ganhas"><span class="star">★</span> <span id="starCount">0</span></span>
+    </div>
+  </header>
+
+  <nav class="steps" aria-label="Etapas">
+    <button class="step" data-step="explore" aria-current="step"><span class="n">1</span><span>Explorar<small>toque e ouça</small></span></button>
+    <button class="step" data-step="recall"><span class="n">2</span><span>Relembrar<small>o que é isso?</small></span></button>
+    <button class="step" data-step="reinforce"><span class="n">3</span><span>Reforçar<small>ouvir e escrever</small></span></button>
+  </nav>
+
+  <!-- 1. EXPLORAR -->
+  <section id="s-explore">
+    <div class="stage">
+      <div>
+        <div class="frame" id="houseFrame">
+          <svg id="house" viewBox="0 0 800 600" role="img" aria-label="Casa em corte com todos os cômodos">
+            <rect width="800" height="480" fill="#CFE6F2"/>
+            <circle cx="110" cy="70" r="28" fill="#F6D66B"/>
+            <g fill="#FFFFFF"><ellipse cx="640" cy="76" rx="46" ry="15"/><ellipse cx="668" cy="64" rx="26" ry="15"/><ellipse cx="200" cy="132" rx="34" ry="10"/><ellipse cx="220" cy="124" rx="18" ry="10"/></g>
+            <rect y="478" width="800" height="122" fill="#8A6A4F"/>
+            <rect y="472" width="800" height="12" fill="#7FA66B"/>
+
+            <!-- garden -->
+            <g class="part" data-k="garden">
+              <rect x="0" y="318" width="182" height="164" fill="#FFFFFF" fill-opacity="0" pointer-events="all"/>
+              <rect x="0" y="470" width="180" height="14" fill="#6F9A5C"/>
+              <rect x="42" y="384" width="12" height="90" fill="#7A5236"/>
+              <circle cx="48" cy="370" r="30" fill="#5E8F4E"/><circle cx="24" cy="390" r="20" fill="#6FA35C"/><circle cx="72" cy="390" r="20" fill="#6FA35C"/>
+              <circle cx="36" cy="364" r="4" fill="#C8322E"/><circle cx="62" cy="380" r="4" fill="#C8322E"/><circle cx="30" cy="392" r="4" fill="#C8322E"/>
+              <g stroke="#3E7A2F" stroke-width="2"><line x1="150" y1="474" x2="150" y2="460"/><line x1="162" y1="474" x2="162" y2="456"/><line x1="172" y1="474" x2="172" y2="462"/></g>
+              <circle cx="150" cy="458" r="5" fill="#F6D66B"/><circle cx="162" cy="454" r="5" fill="#E88BB0"/><circle cx="172" cy="460" r="5" fill="#FFFFFF"/>
+            </g>
+
+            <!-- fence -->
+            <g class="part" data-k="fence">
+              <rect x="0" y="454" width="88" height="4" fill="#E4DCCB" stroke="#26313D" stroke-width=".8"/>
+              <rect x="0" y="466" width="88" height="4" fill="#E4DCCB" stroke="#26313D" stroke-width=".8"/>
+              <g fill="#F2EEE6" stroke="#26313D" stroke-width="1">
+                <path d="M4 478V450l4-6 4 6v28Z"/><path d="M16 478V450l4-6 4 6v28Z"/><path d="M28 478V450l4-6 4 6v28Z"/><path d="M40 478V450l4-6 4 6v28Z"/><path d="M52 478V450l4-6 4 6v28Z"/><path d="M64 478V450l4-6 4 6v28Z"/><path d="M76 478V450l4-6 4 6v28Z"/>
+              </g>
+            </g>
+
+            <!-- gate -->
+            <g class="part" data-k="gate">
+              <rect x="86" y="438" width="6" height="40" fill="#5B4A3A"/>
+              <rect x="128" y="438" width="6" height="40" fill="#5B4A3A"/>
+              <rect x="92" y="448" width="36" height="28" fill="#3F6B4A" stroke="#26313D" stroke-width="1.5"/>
+              <path d="M94 474 126 450M100 448v28M110 448v28M120 448v28" stroke="#2E5238" stroke-width="2"/>
+              <rect x="122" y="459" width="8" height="4" fill="#F6D66B"/>
+            </g>
+
+            <!-- chimney (desenhada antes do telhado) -->
+            <g class="part" data-k="chimney">
+              <rect x="330" y="50" width="34" height="80" fill="url(#brick)" stroke="#26313D" stroke-width="2"/>
+              <rect x="326" y="46" width="42" height="7" fill="#7A3B2B" stroke="#26313D" stroke-width="1.5"/>
+              <rect x="333" y="34" width="10" height="13" fill="#C27A48" stroke="#26313D" stroke-width="1.5"/>
+              <rect x="351" y="34" width="10" height="13" fill="#C27A48" stroke="#26313D" stroke-width="1.5"/>
+            </g>
+            <g class="smoke" fill="#FFFFFF" pointer-events="none"><circle cx="356" cy="24" r="6"/><circle cx="364" cy="16" r="8"/><circle cx="352" cy="10" r="6"/></g>
+
+            <!-- paredes -->
+            <rect x="180" y="200" width="400" height="284" fill="url(#brick)" stroke="#26313D" stroke-width="2"/>
+
+            <!-- loft -->
+            <g class="part" data-k="loft">
+              <polygon points="192,205 380,92 568,205" fill="#E6D2AE"/>
+              <path d="M380 92 300 205M380 92 460 205" stroke="#C9AE82" stroke-width="4"/>
+              <rect x="220" y="182" width="34" height="22" fill="#C9955B" stroke="#26313D" stroke-width="1.5"/>
+              <rect x="250" y="190" width="26" height="14" fill="#D8A86E" stroke="#26313D" stroke-width="1.5"/>
+              <rect x="498" y="180" width="30" height="24" fill="#C9955B" stroke="#26313D" stroke-width="1.5"/>
+              <circle cx="470" cy="196" r="8" fill="#B07A4A"/><circle cx="464" cy="188" r="3.5" fill="#B07A4A"/><circle cx="476" cy="188" r="3.5" fill="#B07A4A"/>
+              <circle cx="380" cy="150" r="14" fill="#CFE6F2" stroke="#7A5236" stroke-width="3"/>
+              <path d="M366 150h28M380 136v28" stroke="#7A5236" stroke-width="2"/>
+            </g>
+
+            <!-- roof -->
+            <g class="part" data-k="roof">
+              <path d="M146 216 380 60 614 216Z M192 205 380 92 568 205Z" fill="url(#tiles)" fill-rule="evenodd" stroke="#26313D" stroke-width="2"/>
+              <rect x="146" y="212" width="468" height="6" fill="#3B3F47"/>
+            </g>
+
+            <!-- bedroom -->
+            <g class="part" data-k="bedroom">
+              <rect x="190" y="220" width="200" height="115" fill="#E4DDF0"/>
+              <rect x="190" y="330" width="200" height="5" fill="#FFFFFF"/>
+              <rect x="206" y="236" width="32" height="40" fill="#FFFFFF" stroke="#26313D" stroke-width="1.5"/>
+              <path d="M222 244l3 7h7l-5.5 4.5 2 7-6.5-4-6.5 4 2-7L212 251h7Z" fill="#F6D66B"/>
+              <rect x="190" y="300" width="62" height="5" fill="#8A5A3C"/>
+              <g fill="#8A5A3C"><rect x="196" y="305" width="3" height="25"/><rect x="208" y="305" width="3" height="25"/><rect x="220" y="305" width="3" height="25"/><rect x="232" y="305" width="3" height="25"/><rect x="244" y="305" width="3" height="25"/></g>
+              <rect x="374" y="290" width="10" height="45" rx="3" fill="#8A5A3C"/>
+              <rect x="264" y="308" width="112" height="18" fill="#FFFFFF" stroke="#26313D" stroke-width="1"/>
+              <rect x="346" y="300" width="26" height="12" rx="5" fill="#FFFFFF" stroke="#B9C2CC"/>
+              <rect x="262" y="304" width="86" height="24" rx="4" fill="#6C8EBF" stroke="#26313D" stroke-width="1"/>
+              <rect x="266" y="326" width="5" height="9" fill="#8A5A3C"/><rect x="368" y="326" width="5" height="9" fill="#8A5A3C"/>
+            </g>
+
+            <!-- window -->
+            <g class="part" data-k="window">
+              <rect x="300" y="228" width="72" height="54" fill="#CFE6F2" stroke="#FFFFFF" stroke-width="5"/>
+              <path d="M336 228v54M300 255h72" stroke="#FFFFFF" stroke-width="3"/>
+              <path d="M290 224h15q-4 30 4 60h-19Z" fill="#F6D66B" stroke="#26313D" stroke-width="1"/>
+              <path d="M382 224h-15q4 30-4 60h19Z" fill="#F6D66B" stroke="#26313D" stroke-width="1"/>
+              <path d="M286 224h100" stroke="#8A5A3C" stroke-width="3"/>
+              <rect x="296" y="282" width="80" height="5" fill="#FFFFFF" stroke="#26313D" stroke-width=".8"/>
+            </g>
+
+            <!-- bathroom -->
+            <g class="part" data-k="bathroom">
+              <rect x="400" y="220" width="170" height="115" fill="url(#bathtile)"/>
+              <ellipse cx="462" cy="252" rx="15" ry="19" fill="#EAF6FA" stroke="#7FA0A8" stroke-width="2.5"/>
+              <rect x="508" y="230" width="42" height="30" fill="#EEF3F5" stroke="#FFFFFF" stroke-width="4"/>
+              <path d="M416 306v-14h10" stroke="#8E9AA6" stroke-width="3" fill="none"/>
+              <circle cx="444" cy="300" r="5" fill="#FFFFFF" stroke="#B9DAD3"/><circle cx="456" cy="296" r="4" fill="#FFFFFF" stroke="#B9DAD3"/><circle cx="470" cy="301" r="6" fill="#FFFFFF" stroke="#B9DAD3"/>
+              <path d="M410 306h94v10a14 14 0 0 1-14 14h-66a14 14 0 0 1-14-14Z" fill="#FFFFFF" stroke="#26313D" stroke-width="1.5"/>
+              <circle cx="422" cy="332" r="3" fill="#D9A400"/><circle cx="492" cy="332" r="3" fill="#D9A400"/>
+              <rect x="536" y="290" width="18" height="26" rx="2" fill="#FFFFFF" stroke="#26313D" stroke-width="1.5"/>
+              <path d="M520 316h34v6a10 10 0 0 1-10 10h-14a10 10 0 0 1-10-10Z" fill="#FFFFFF" stroke="#26313D" stroke-width="1.5"/>
+              <rect x="530" y="330" width="14" height="5" fill="#FFFFFF" stroke="#26313D" stroke-width="1"/>
+            </g>
+
+            <!-- hall -->
+            <g class="part" data-k="hall">
+              <rect x="190" y="345" width="130" height="135" fill="#F3E3C3"/>
+              <path d="M306 368h10" stroke="#8A5A3C" stroke-width="3"/>
+              <path d="M308 370h8l3 28h-14Z" fill="#6C8EBF" stroke="#26313D" stroke-width="1"/>
+              <rect x="258" y="476" width="50" height="4" fill="#8A5A3C"/>
+            </g>
+
+            <!-- stairs -->
+            <g class="part" data-k="stairs">
+              <polygon points="250,480 250,461 243,461 243,442 236,442 236,423 229,423 229,404 222,404 222,385 215,385 215,366 208,366 208,347 190,347 190,480" fill="#9C6B48" stroke="#26313D" stroke-width="1.5"/>
+              <path d="M252 452 198 318" stroke="#8A5A3C" stroke-width="3"/>
+              <path d="M252 452v28" stroke="#8A5A3C" stroke-width="3"/>
+            </g>
+
+            <!-- front door -->
+            <g class="part" data-k="frontdoor">
+              <path d="M262 394a21 21 0 0 1 42 0Z" fill="#CFE6F2" stroke="#FFFFFF" stroke-width="3"/>
+              <rect x="262" y="394" width="42" height="86" fill="#C8322E" stroke="#26313D" stroke-width="1.5"/>
+              <rect x="268" y="444" width="12" height="28" fill="none" stroke="#9E2522" stroke-width="2"/>
+              <rect x="286" y="444" width="12" height="28" fill="none" stroke="#9E2522" stroke-width="2"/>
+              <rect x="273" y="428" width="20" height="4" fill="#D9A400"/>
+              <circle cx="298" cy="438" r="2.5" fill="#D9A400"/>
+              <text x="283" y="416" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="14" fill="#F6D66B">7</text>
+              <rect x="258" y="478" width="50" height="4" fill="#A3ACB6"/>
+            </g>
+
+            <!-- living room -->
+            <g class="part" data-k="living">
+              <rect x="330" y="345" width="120" height="135" fill="#F4D9C6"/>
+              <rect x="346" y="360" width="30" height="22" fill="#CFE6F2" stroke="#8A5A3C" stroke-width="3"/>
+              <path d="M349 379l9-9 7 6 5-4 3 7Z" fill="#7FA66B"/>
+              <rect x="336" y="402" width="50" height="78" fill="#EDE6DA" stroke="#26313D" stroke-width="1.5"/>
+              <rect x="330" y="398" width="62" height="7" fill="#8A5A3C"/>
+              <path d="M348 480v-38a13 13 0 0 1 26 0v38Z" fill="#3B2B25"/>
+              <path d="M352 480c0-12 6-14 5-24 6 6 8 10 9 4 5 8 5 14 4 20Z" fill="#F29B38"/>
+              <path d="M357 480c0-8 3-9 4-15 3 5 5 8 4 15Z" fill="#F6D66B"/>
+              <ellipse cx="402" cy="478" rx="40" ry="4" fill="#C8322E" opacity=".55"/>
+              <rect x="404" y="440" width="32" height="40" rx="6" fill="#7FA66B" stroke="#26313D" stroke-width="1.2"/>
+              <rect x="400" y="458" width="42" height="14" rx="4" fill="#6C9A5A" stroke="#26313D" stroke-width="1.2"/>
+            </g>
+
+            <!-- kitchen -->
+            <g class="part" data-k="kitchen">
+              <rect x="460" y="345" width="110" height="135" fill="#FFF1B8"/>
+              <rect x="466" y="356" width="54" height="24" fill="#7FA66B" stroke="#26313D" stroke-width="1.2"/>
+              <path d="M493 356v24" stroke="#26313D" stroke-width="1"/>
+              <circle cx="489" cy="370" r="1.6" fill="#26313D"/><circle cx="497" cy="370" r="1.6" fill="#26313D"/>
+              <rect x="468" y="438" width="40" height="42" fill="#EFEFEF" stroke="#26313D" stroke-width="1.5"/>
+              <rect x="466" y="434" width="44" height="6" fill="#3B3F47"/>
+              <rect x="474" y="450" width="28" height="18" rx="2" fill="#4B525C"/>
+              <circle cx="476" cy="444" r="1.8" fill="#26313D"/><circle cx="488" cy="444" r="1.8" fill="#26313D"/><circle cx="500" cy="444" r="1.8" fill="#26313D"/>
+              <path d="M478 434v-10a8 8 0 0 1 16 0v10Z" fill="#C8322E" stroke="#26313D" stroke-width="1"/>
+              <path d="M494 428l6-4" stroke="#26313D" stroke-width="2"/>
+              <rect x="528" y="388" width="38" height="92" rx="4" fill="#F7F9FA" stroke="#26313D" stroke-width="1.5"/>
+              <path d="M528 420h38" stroke="#26313D" stroke-width="1"/>
+              <rect x="532" y="398" width="3" height="14" fill="#8E9AA6"/><rect x="532" y="428" width="3" height="20" fill="#8E9AA6"/>
+              <circle cx="552" cy="400" r="3" fill="#C8322E"/><circle cx="558" cy="440" r="3" fill="#6C8EBF"/>
+            </g>
+
+            <!-- cellar -->
+            <g class="part" data-k="cellar">
+              <rect x="180" y="486" width="400" height="102" fill="url(#stone)" stroke="#26313D" stroke-width="2"/>
+              <rect x="192" y="496" width="376" height="84" fill="#5E4E42"/>
+              <path d="M380 496v14" stroke="#26313D" stroke-width="1.5"/>
+              <circle cx="380" cy="515" r="6" fill="#F6D66B"/>
+              <rect x="208" y="534" width="110" height="4" fill="#8A5A3C"/>
+              <rect x="214" y="518" width="14" height="16" rx="2" fill="#C8322E"/><rect x="234" y="520" width="12" height="14" rx="2" fill="#F6D66B"/><rect x="252" y="516" width="14" height="18" rx="2" fill="#7FA66B"/><rect x="272" y="520" width="12" height="14" rx="2" fill="#CFE6F2"/>
+              <rect x="440" y="548" width="40" height="32" fill="#C9955B" stroke="#26313D" stroke-width="1.2"/>
+              <rect x="486" y="556" width="34" height="24" fill="#D8A86E" stroke="#26313D" stroke-width="1.2"/>
+              <path d="M530 496v84M550 496v84M530 512h20M530 530h20M530 548h20M530 566h20" stroke="#A3825F" stroke-width="3"/>
+            </g>
+
+            <!-- garage -->
+            <g class="part" data-k="garage">
+              <rect x="580" y="362" width="140" height="118" fill="url(#brick)" stroke="#26313D" stroke-width="2"/>
+              <rect x="574" y="354" width="152" height="10" fill="#3B3F47"/>
+              <rect x="598" y="384" width="104" height="96" fill="#E4E9EE" stroke="#26313D" stroke-width="1.5"/>
+              <path d="M598 396h104M598 408h104M598 420h104M598 432h104M598 444h104M598 456h104M598 468h104" stroke="#B9C2CC" stroke-width="1.5"/>
+              <rect x="642" y="462" width="16" height="4" fill="#3B3F47"/>
+            </g>
+
+            <!-- first floor (botão "1" do elevador inglês) -->
+            <g class="part" data-k="first">
+              <path d="M586 272H736" stroke="#26313D" stroke-width="2" stroke-dasharray="4 5"/>
+              <circle cx="760" cy="272" r="22" fill="#F6D66B" stroke="#26313D" stroke-width="3"/>
+              <text x="760" y="281" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="24" fill="#26313D">1</text>
+            </g>
+            <!-- ground floor (botão "G") -->
+            <g class="part" data-k="ground">
+              <path d="M722 420H736" stroke="#26313D" stroke-width="2" stroke-dasharray="4 5"/>
+              <circle cx="760" cy="420" r="22" fill="#F6D66B" stroke="#26313D" stroke-width="3"/>
+              <text x="760" y="429" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="24" fill="#26313D">G</text>
+            </g>
+          </svg>
+        </div>
+        <p class="hint">Toque em qualquer parte da casa para ouvir o nome em inglês britânico. Os botões <b>1</b> e <b>G</b> são os andares.</p>
+      </div>
+
+      <aside class="card" id="wordCard" aria-live="polite"></aside>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="row">
+        <span class="count"><span id="seenCount2">0</span> de 18 partes descobertas</span>
+        <button class="go" data-goto="recall">Vamos relembrar →</button>
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </section>
+
+  <!-- 2. RELEMBRAR -->
+  <section id="s-recall" hidden>
+    <div class="game"><div class="card" id="recallBox"></div></div>
+  </section>
+
+  <!-- 3. REFORÇAR -->
+  <section id="s-reinforce" hidden>
+    <div class="game"><div class="card" id="reinBox"></div></div>
+  </section>
+
+  <div class="foot" id="foot">
+    <button class="link" id="resetBtn">Zerar progresso</button>
+  </div>
+</div>
+
+<script>
+/* ---------- Vocabulário (inglês britânico) ---------- */
+const WORDS = [
+  {k:'roof',en:'roof',pt:'telhado',som:'RUF',ex:'The roof keeps the rain out.',exPt:'O telhado protege a casa da chuva.',box:[150,48,460,172]},
+  {k:'chimney',en:'chimney',pt:'chaminé',som:'TCHIM-ni',ex:'Smoke goes up the chimney.',exPt:'A fumaça sobe pela chaminé.',box:[296,4,102,136]},
+  {k:'loft',en:'loft',pt:'sótão',som:'LÓFT',us:'attic',ex:'Our old toys are in the loft.',exPt:'Nossos brinquedos velhos estão no sótão.',box:[186,86,388,124]},
+  {k:'window',en:'window',pt:'janela',som:'UÍN-dou',ex:'Look out of the window!',exPt:'Olhe pela janela!',box:[282,216,108,76]},
+  {k:'bedroom',en:'bedroom',pt:'quarto',som:'BÉD-rum',ex:'I sleep in my bedroom.',exPt:'Eu durmo no meu quarto.',box:[184,214,212,126]},
+  {k:'bathroom',en:'bathroom',pt:'banheiro',som:'BAATH-rum',ex:'I have a bath in the bathroom.',exPt:'Eu tomo banho de banheira no banheiro.',note:'O vaso sanitário é o <b lang="en-GB">toilet</b>. Muitos ingleses dizem <b lang="en-GB">loo</b>!',box:[394,214,182,126]},
+  {k:'stairs',en:'stairs',pt:'escada',som:'STÉERS',ex:'Go up the stairs to bed.',exPt:'Suba a escada para ir dormir.',box:[184,340,74,144]},
+  {k:'hall',en:'hall',pt:'hall de entrada',som:'HÓOL',ex:'Leave your shoes in the hall.',exPt:'Deixe seus sapatos no hall.',box:[184,340,142,144]},
+  {k:'frontdoor',en:'front door',pt:'porta da frente',som:'FRÂNT dóor',ex:'Knock on the front door.',exPt:'Bata na porta da frente.',note:'Portas coloridas com número, como esta vermelha, são muito comuns na Inglaterra.',box:[254,366,58,120]},
+  {k:'living',en:'living room',pt:'sala de estar',som:'LI-vin rum',ex:'We sit by the fire in the living room.',exPt:'A gente senta perto da lareira na sala.',note:'Os ingleses também dizem <b lang="en-GB">lounge</b>.',box:[324,340,132,144]},
+  {k:'kitchen',en:'kitchen',pt:'cozinha',som:'KI-tchin',ex:'Dad makes tea in the kitchen.',exPt:'O papai faz chá na cozinha.',note:'O fogão é o <b lang="en-GB">cooker</b> e a torneira é o <b lang="en-GB">tap</b>.',box:[454,340,122,144]},
+  {k:'cellar',en:'cellar',pt:'porão',som:'SÉ-la',us:'basement',ex:"It's dark in the cellar.",exPt:'Está escuro no porão.',box:[176,482,408,110]},
+  {k:'garage',en:'garage',pt:'garagem',som:'GÉ-raaj',ex:'The car sleeps in the garage.',exPt:'O carro dorme na garagem.',box:[570,346,160,140]},
+  {k:'garden',en:'garden',pt:'jardim / quintal',som:'GAA-den',us:'yard',ex:"Let's play in the garden!",exPt:'Vamos brincar no jardim!',box:[0,330,186,156]},
+  {k:'fence',en:'fence',pt:'cerca',som:'FÉNS',ex:'The fence goes round the garden.',exPt:'A cerca fica em volta do jardim.',box:[0,436,90,46]},
+  {k:'gate',en:'gate',pt:'portão',som:'GUEIT',ex:'Close the gate, please.',exPt:'Feche o portão, por favor.',box:[82,432,56,52]},
+  {k:'first',en:'first floor',pt:'primeiro andar',som:'FÂRST flóor',us:'second floor',ex:'My bedroom is on the first floor.',exPt:'Meu quarto fica no primeiro andar.',note:'É o andar de cima do térreo. Nos EUA, chamam de <b lang="en-US">second floor</b>.',box:[730,242,60,60]},
+  {k:'ground',en:'ground floor',pt:'térreo',som:'GRAUND flóor',us:'first floor',ex:'The kitchen is on the ground floor.',exPt:'A cozinha fica no térreo.',note:'Nos elevadores ingleses, o térreo é o botão <b>G</b>.',box:[730,390,60,60]},
+];
+const BY = Object.fromEntries(WORDS.map(w => [w.k, w]));
+const PRAISE = ['Brilliant!','Well done!','Spot on!','Lovely!','Great job!'];
+const SPK = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+
+/* ---------- Progresso (só neste navegador) ---------- */
+const KEY = 'no7-primrose';
+function load(){ try { return JSON.parse(localStorage.getItem(KEY)); } catch(e){ return null; } }
+let S = Object.assign({seen:{}, m:{}, missed:[], stars:0}, load() || {});
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+
+/* ---------- Voz em inglês britânico ---------- */
+let voices = [];
+function loadVoices(){ try { voices = speechSynthesis.getVoices(); } catch(e){} }
+if ('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+function pickVoice(lang){
+  return voices.find(v => v.lang === lang && /female|google|serena|kate|libby|sonia/i.test(v.name))
+      || voices.find(v => v.lang === lang)
+      || voices.find(v => v.lang && v.lang.replace('_','-').startsWith(lang))
+      || null;
+}
+function say(text, lang='en-GB', rate=.85){
+  if (!('speechSynthesis' in window)) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang; u.rate = rate;
+    const v = pickVoice(lang); if (v) u.voice = v;
+    speechSynthesis.speak(u);
+  } catch(e){}
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-say]');
+  if (b) say(b.dataset.say);
+});
+
+/* ---------- Utilidades ---------- */
+const $ = s => document.querySelector(s);
+const shuffle = a => { a = a.slice(); for (let i = a.length-1; i > 0; i--){ const j = Math.random()*(i+1)|0; [a[i],a[j]] = [a[j],a[i]]; } return a; };
+const house = $('#house');
+const NS = 'http://www.w3.org/2000/svg';
+
+function setHL(svg, box, cls=''){
+  svg.querySelectorAll('.hlbox').forEach(n => n.remove());
+  if (!box) return;
+  const r = document.createElementNS(NS,'rect');
+  r.setAttribute('class','hlbox '+cls);
+  r.setAttribute('x',box[0]+4); r.setAttribute('y',box[1]+4);
+  r.setAttribute('width',box[2]-8); r.setAttribute('height',box[3]-8);
+  r.setAttribute('rx',10);
+  svg.appendChild(r);
+}
+// Recorte ilustrado de uma parte da casa (reaproveita o desenho principal)
+function zoom(k, withBox=true){
+  const w = BY[k];
+  const c = house.cloneNode(true);
+  c.removeAttribute('id');
+  c.querySelectorAll('.hlbox').forEach(n => n.remove());
+  c.querySelectorAll('[tabindex]').forEach(n => { n.removeAttribute('tabindex'); n.removeAttribute('role'); });
+  const [x,y,wd,ht] = w.box;
+  // enquadra em 4:3 centralizado na parte
+  const ar = 4/3; let W = wd, H = ht;
+  if (W/H > ar) H = W/ar; else W = H*ar;
+  c.setAttribute('viewBox', [x-(W-wd)/2, y-(H-ht)/2, W, H].join(' '));
+  c.setAttribute('preserveAspectRatio','xMidYMid slice');
+  c.setAttribute('aria-hidden','true');
+  c.style.pointerEvents = 'none';
+  if (withBox) setHL(c, w.box);
+  return c;
+}
+function fullHouse(){
+  const c = house.cloneNode(true);
+  c.removeAttribute('id');
+  c.querySelectorAll('.hlbox').forEach(n => n.remove());
+  return c;
+}
+function refreshCounts(){
+  const n = Object.keys(S.seen).length;
+  $('#seenCount').textContent = n;
+  $('#seenCount2').textContent = n;
+  $('#starCount').textContent = S.stars;
+}
+
+/* ---------- Navegação entre etapas ---------- */
+function showStep(id){
+  ['explore','recall','reinforce'].forEach(s => { $('#s-'+s).hidden = s !== id; });
+  document.querySelectorAll('.step').forEach(b => { if (b.dataset.step === id) b.setAttribute('aria-current','step'); else b.removeAttribute('aria-current'); });
+  if (id === 'recall') recallIntro();
+  if (id === 'reinforce') reinIntro();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('.step').forEach(b => b.addEventListener('click', () => showStep(b.dataset.step)));
+document.addEventListener('click', e => { const g = e.target.closest('[data-goto]'); if (g) showStep(g.dataset.goto); });
+
+/* ---------- 1. EXPLORAR ---------- */
+house.querySelectorAll('.part').forEach(g => {
+  g.setAttribute('tabindex','0'); g.setAttribute('role','button');
+  g.setAttribute('aria-label', BY[g.dataset.k].en);
+});
+house.addEventListener('click', e => { const g = e.target.closest('.part'); if (g) openWord(g.dataset.k, true); });
+house.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('part')){ e.preventDefault(); openWord(e.target.dataset.k, true); }
+});
+
+let current = null;
+function openWord(k, speak){
+  const w = BY[k]; current = k;
+  if (speak){ S.seen[k] = 1; save(); say(w.en); }
+  setHL(house, w.box);
+  const card = $('#wordCard');
+  card.innerHTML = `
+    <div class="zoombox"></div>
+    <div class="wordrow">
+      <h2 class="word" lang="en-GB">${w.en}</h2>
+      <button class="say" data-say="${w.en}" aria-label="Ouvir ${w.en}">${SPK}</button>
+    </div>
+    <p class="som">Fala-se mais ou menos: <b>${w.som}</b></p>
+    <p class="pt">Em português: <b>${w.pt}</b></p>
+    ${w.us ? `<div class="ukus"><span class="tag uk">Inglaterra: ${w.en}</span><span class="tag us">EUA: ${w.us}</span></div>` : ''}
+    <div class="ex">
+      <button class="say sm" data-say="${w.ex.replace(/"/g,'&quot;')}" aria-label="Ouvir a frase">${SPK}</button>
+      <div><p class="en" lang="en-GB">${w.ex}</p><p class="ptx">${w.exPt}</p></div>
+    </div>
+    ${w.note ? `<p class="note">${w.note}</p>` : ''}
+    <p class="yourturn">Sua vez: repita bem alto!</p>`;
+  card.querySelector('.zoombox').appendChild(zoom(k, false));
+  card.classList.remove('pop'); void card.offsetWidth; card.classList.add('pop');
+  renderChips(); refreshCounts();
+}
+function renderChips(){
+  $('#chips').innerHTML = WORDS.map(w =>
+    `<button class="chip ${S.seen[w.k]?'seen':''} ${current===w.k?'on':''}" data-open="${w.k}" lang="en-GB">${w.en}</button>`).join('');
+}
+$('#chips').addEventListener('click', e => { const b = e.target.closest('[data-open]'); if (b) openWord(b.dataset.open, true); });
+
+/* ---------- 2. RELEMBRAR ---------- */
+let R = null;
+function recallIntro(){
+  const n = Object.keys(S.seen).length;
+  $('#recallBox').innerHTML = `
+    <div class="intro">
+      <p class="eyebrow">Passo 2 · Relembrar</p>
+      <h2>Você lembra o nome?</h2>
+      <p>Vou mostrar um pedaço da casa. Escolha o nome certo em inglês. Se precisar, toque no alto-falante para ouvir cada palavra antes de escolher.</p>
+      ${n < 6 ? `<p class="note">Você descobriu ${n} de 18 partes. Dá para jogar mesmo assim, mas fica mais fácil explorando mais um pouco antes.</p>` : ''}
+      <div class="row"><button class="go" id="startRecall">Começar (10 perguntas)</button><button class="go alt" data-goto="explore">Explorar mais</button></div>
+    </div>`;
+  $('#startRecall').onclick = startRecall;
+}
+function startRecall(){
+  const seen = shuffle(WORDS.filter(w => S.seen[w.k]));
+  const rest = shuffle(WORDS.filter(w => !S.seen[w.k]));
+  const q = seen.concat(rest).slice(0, 10);
+  R = {q: shuffle(q), i: 0, marks: [], missed: []};
+  recallQ();
+}
+function progressBar(total, marks, i){
+  let h = '<div class="progress" aria-hidden="true">';
+  for (let j = 0; j < total; j++) h += `<i class="${marks[j] ? marks[j] : (j===i ? 'now' : '')}"></i>`;
+  return h + '</div>';
+}
+function recallQ(){
+  const w = R.q[R.i];
+  const opts = shuffle([w, ...shuffle(WORDS.filter(x => x.k !== w.k)).slice(0,2)]);
+  const box = $('#recallBox');
+  box.innerHTML = `
+    <div class="row"><p class="eyebrow">Relembrar · ${R.i+1} de ${R.q.length}</p>${progressBar(R.q.length, R.marks, R.i)}</div>
+    <div class="zoombox"></div>
+    <div class="ask"><h2 lang="en-GB">What's this?</h2><span class="ptq">O que é isso?</span></div>
+    <div class="opts">${opts.map(o => `
+      <div class="opt">
+        <button class="optbtn" data-k="${o.k}" lang="en-GB">${o.en}</button>
+        <button class="say sm" data-say="${o.en}" aria-label="Ouvir ${o.en}">${SPK}</button>
+      </div>`).join('')}
+    </div>
+    <p class="feedback" aria-live="polite"></p>
+    <div class="row" id="nextRow" hidden><span></span><button class="go" id="nextQ">${R.i+1 < R.q.length ? 'Próxima →' : 'Ver resultado →'}</button></div>`;
+  box.querySelector('.zoombox').appendChild(zoom(w.k));
+  box.querySelectorAll('.optbtn').forEach(b => b.onclick = () => answerRecall(b, w));
+}
+function answerRecall(btn, w){
+  const box = $('#recallBox');
+  box.querySelectorAll('.optbtn').forEach(b => b.disabled = true);
+  const fb = box.querySelector('.feedback');
+  if (btn.dataset.k === w.k){
+    btn.classList.add('ok','pop');
+    const p = PRAISE[Math.random()*PRAISE.length|0];
+    fb.className = 'feedback ok'; fb.textContent = `${p} ★`;
+    say(`${w.en}! ${p}`);
+    R.marks[R.i] = 'done';
+    S.m[w.k] = Math.min(3, (S.m[w.k]||0) + 1); S.stars++;
+  } else {
+    btn.classList.add('no','shake');
+    box.querySelector(`.optbtn[data-k="${w.k}"]`).classList.add('ok');
+    fb.className = 'feedback no'; fb.innerHTML = `Quase! Este é o <span lang="en-GB">${w.en}</span>.`;
+    say(`This is the ${w.en}.`);
+    R.marks[R.i] = 'miss'; R.missed.push(w.k);
+    S.m[w.k] = Math.max(0, (S.m[w.k]||0) - 1);
+  }
+  S.seen[w.k] = 1; save(); refreshCounts();
+  $('#nextRow').hidden = false;
+  $('#nextQ').focus();
+  $('#nextQ').onclick = () => { R.i++; R.i < R.q.length ? recallQ() : recallEnd(); };
+}
+function recallEnd(){
+  const right = R.q.length - R.missed.length;
+  S.missed = [...new Set(R.missed)]; save();
+  const stars = right >= 9 ? 3 : right >= 6 ? 2 : 1;
+  $('#recallBox').innerHTML = `
+    <div class="result card" style="border:0;box-shadow:none;padding:0">
+      <p class="eyebrow">Relembrar · resultado</p>
+      <p class="big">${right} de ${R.q.length}</p>
+      <p class="stars" aria-label="${stars} estrelas">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</p>
+      ${S.missed.length
+        ? `<p>Estas ficaram difíceis. Vamos treinar elas no reforço:</p>
+           <div class="chips" style="justify-content:center">${S.missed.map(k => `<span class="chip" lang="en-GB">${BY[k].en}</span>`).join('')}</div>`
+        : `<p>Acertou tudo! No reforço vamos ouvir e escrever as palavras.</p>`}
+      <div class="row" style="justify-content:center"><button class="go" data-goto="reinforce">Reforçar agora →</button><button class="go alt" id="againRecall">Jogar de novo</button></div>
+    </div>`;
+  say(right >= 8 ? 'Brilliant! Well done!' : 'Good try! Let’s practise.');
+  $('#againRecall').onclick = startRecall;
+}
+
+/* ---------- 3. REFORÇAR ---------- */
+let F = null;
+function reinIntro(){
+  const has = S.missed.length;
+  $('#reinBox').innerHTML = `
+    <div class="intro">
+      <p class="eyebrow">Passo 3 · Reforçar</p>
+      <h2>Ouça, toque e escreva</h2>
+      <p>Dois jogos misturados: primeiro você <b>ouve</b> a palavra e toca na parte certa da casa. Depois você <b>monta</b> a palavra com as letras.</p>
+      <p class="note">${has
+        ? `Vou repetir mais vezes as que ficaram difíceis: <b lang="en-GB">${S.missed.map(k => BY[k].en).join(', ')}</b>.`
+        : 'Faça o Relembrar antes para eu saber quais palavras treinar mais. Sem ele, eu escolho as que você ainda não domina.'}</p>
+      <div class="row"><button class="go" id="startRein">Começar (8 rodadas)</button>${has ? '' : '<button class="go alt" data-goto="recall">Ir para Relembrar</button>'}</div>
+    </div>`;
+  $('#startRein').onclick = startRein;
+}
+function startRein(){
+  const base = S.missed.slice();
+  let q = [...base, ...base];
+  const weak = shuffle(WORDS.filter(w => !base.includes(w.k) && (S.m[w.k]||0) < 2)).map(w => w.k);
+  const rest = shuffle(WORDS.filter(w => !base.includes(w.k) && !weak.includes(w.k))).map(w => w.k);
+  q = q.concat(weak, rest).slice(0, 8);
+  q = shuffle(q);
+  // evita a mesma palavra duas vezes seguidas
+  for (let i = 1; i < q.length; i++) if (q[i] === q[i-1]){
+    const j = q.findIndex((x, idx) => idx > i && x !== q[i]); if (j > -1) [q[i], q[j]] = [q[j], q[i]];
+  }
+  F = {q, i: 0, marks: [], right: 0};
+  reinRound();
+}
+function reinHeader(title, pt){
+  return `<div class="row"><p class="eyebrow">Reforçar · ${F.i+1} de ${F.q.length}</p>${progressBar(F.q.length, F.marks, F.i)}</div>
+          <div class="ask"><h2>${title}</h2><span class="ptq">${pt}</span></div>`;
+}
+function reinRound(){ (F.i % 2 === 0 ? tapRound : spellRound)(BY[F.q[F.i]]); }
+function reinNext(ok){
+  F.marks[F.i] = ok ? 'done' : 'miss';
+  const w = BY[F.q[F.i]];
+  if (ok){ F.right++; S.stars++; S.m[w.k] = Math.min(3, (S.m[w.k]||0) + 1); }
+  save(); refreshCounts();
+  const row = $('#reinBox .next'); row.hidden = false;
+  const b = row.querySelector('button'); b.focus();
+  b.onclick = () => { F.i++; F.i < F.q.length ? reinRound() : reinEnd(); };
+}
+const nextBtn = () => `<div class="row next" hidden><span></span><button class="go">${F.i+1 < F.q.length ? 'Próxima →' : 'Ver resultado →'}</button></div>`;
+
+// Jogo A: ouça e toque na casa
+function tapRound(w){
+  const box = $('#reinBox');
+  box.innerHTML = `${reinHeader('Listen and tap!','Ouça e toque na parte certa da casa')}
+    <div class="row" style="justify-content:flex-start"><button class="say" data-say="${w.en}" aria-label="Ouvir de novo">${SPK}</button><span>Toque no alto-falante para ouvir de novo.</span></div>
+    <div class="frame" id="tapHouse"></div>
+    <p class="feedback" aria-live="polite"></p>${nextBtn()}`;
+  const svg = fullHouse();
+  $('#tapHouse').appendChild(svg);
+  setTimeout(() => say(w.en), 250);
+  let tries = 0, done = false;
+  const fb = box.querySelector('.feedback');
+  const pick = g => {
+    if (done || !g) return;
+    const k = g.dataset.k;
+    if (k === w.k){
+      done = true; setHL(svg, w.box);
+      const p = PRAISE[Math.random()*PRAISE.length|0];
+      fb.className = 'feedback ok'; fb.innerHTML = `${p} Esse é o <span lang="en-GB">${w.en}</span>. ★`;
+      say(`${p} The ${w.en}!`);
+      reinNext(tries === 0);
+    } else {
+      tries++;
+      setHL(svg, BY[k].box, 'bad');
+      if (tries >= 2){
+        done = true;
+        setTimeout(() => setHL(svg, w.box), 700);
+        fb.className = 'feedback no'; fb.innerHTML = `Aqui está: <span lang="en-GB">${w.en}</span> (${w.pt}).`;
+        say(`That's the ${BY[k].en}. Here is the ${w.en}.`);
+        reinNext(false);
+      } else {
+        fb.className = 'feedback no'; fb.innerHTML = `Isso é <span lang="en-GB">${BY[k].en}</span>. Tente de novo!`;
+        say(`That's the ${BY[k].en}. Try again!`);
+      }
+    }
+  };
+  svg.addEventListener('click', e => pick(e.target.closest('.part')));
+  svg.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('part')){ e.preventDefault(); pick(e.target); } });
+}
+
+// Jogo B: monte a palavra
+function spellRound(w){
+  const box = $('#reinBox');
+  const letters = w.en.replace(/ /g,'').split('');
+  const tiles = shuffle(letters.map((ch, i) => ({ch, i})));
+  box.innerHTML = `${reinHeader('Spell it!','Monte a palavra com as letras')}
+    <div class="zoombox"></div>
+    <div class="row" style="justify-content:flex-start"><button class="say" data-say="${w.en}" aria-label="Ouvir a palavra">${SPK}</button><span>Dica: em português é <b>${w.pt}</b>.</span></div>
+    <div class="slots" lang="en-GB">${w.en.split('').map(ch => ch === ' ' ? '<span class="slot gap"></span>' : '<span class="slot" data-slot></span>').join('')}</div>
+    <div class="tiles">${tiles.map((t, n) => `<button class="tile" data-n="${n}" aria-label="letra ${t.ch}">${t.ch}</button>`).join('')}</div>
+    <p class="feedback" aria-live="polite"></p>${nextBtn()}`;
+  box.querySelector('.zoombox').appendChild(zoom(w.k));
+  const slots = [...box.querySelectorAll('[data-slot]')];
+  const fb = box.querySelector('.feedback');
+  let pos = 0, errors = 0;
+  box.querySelectorAll('.tile').forEach(b => b.onclick = () => {
+    if (b.disabled) return;
+    const t = tiles[+b.dataset.n];
+    if (t.ch === letters[pos]){
+      slots[pos].textContent = t.ch; slots[pos].classList.add('pop');
+      b.disabled = true; b.classList.remove('hintme'); pos++;
+      box.querySelectorAll('.tile.hintme').forEach(x => x.classList.remove('hintme'));
+      if (pos === letters.length){
+        const p = PRAISE[Math.random()*PRAISE.length|0];
+        fb.className = 'feedback ok'; fb.textContent = `${p} ★`;
+        say(`${w.en}! ${p}`);
+        reinNext(errors < 3);
+      }
+    } else {
+      errors++;
+      b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+      if (errors >= 3){
+        const good = [...box.querySelectorAll('.tile')].find(x => !x.disabled && tiles[+x.dataset.n].ch === letters[pos]);
+        if (good) good.classList.add('hintme');
+        fb.className = 'feedback no'; fb.textContent = 'A letra que pisca é a próxima!';
+      }
+    }
+  });
+}
+function reinEnd(){
+  const right = F.right;
+  const stars = right >= 7 ? 3 : right >= 5 ? 2 : 1;
+  // o que acertou no reforço sai da lista de difíceis
+  S.missed = S.missed.filter(k => (S.m[k]||0) < 1); save();
+  $('#reinBox').innerHTML = `
+    <div class="result card" style="border:0;box-shadow:none;padding:0">
+      <p class="eyebrow">Reforçar · resultado</p>
+      <p class="big">${right} de ${F.q.length}</p>
+      <p class="stars" aria-label="${stars} estrelas">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</p>
+      <p>${right >= 7 ? 'Você já sabe a casa inteira em inglês britânico!' : 'Mais uma rodada e essas palavras ficam na cabeça.'}</p>
+      <div class="row" style="justify-content:center"><button class="go" id="againRein">Reforçar de novo</button><button class="go alt" data-goto="recall">Relembrar de novo</button></div>
+    </div>`;
+  say(right >= 7 ? 'Brilliant! You know the whole house!' : 'Well done! Let’s play again.');
+  $('#againRein').onclick = startRein;
+}
+
+/* ---------- Zerar progresso (confirmação na própria página) ---------- */
+function footIdle(){
+  $('#foot').innerHTML = '<button class="link" id="resetBtn">Zerar progresso</button>';
+  $('#resetBtn').onclick = () => {
+    $('#foot').innerHTML = `<span>Apagar estrelas e palavras descobertas?</span><button class="link" id="yesReset">Sim, zerar</button><button class="link" id="noReset">Cancelar</button>`;
+    $('#noReset').onclick = footIdle;
+    $('#yesReset').onclick = () => {
+      try { localStorage.removeItem(KEY); } catch(e){}
+      S = {seen:{}, m:{}, missed:[], stars:0};
+      footIdle(); showStep('explore'); openWord('roof', false); refreshCounts();
+    };
+  };
+}
+footIdle();
+
+/* ---------- Estado inicial ---------- */
+openWord('roof', false);
+refreshCounts();
+</script>
+
+<script>
+  // Registra o modo offline
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
+</script>
+</body>
+</html>
